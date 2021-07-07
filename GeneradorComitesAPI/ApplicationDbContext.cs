@@ -23,5 +23,6 @@ namespace GeneradorComitesAPI
         public DbSet<Person> Persons { get; set; }
         public DbSet<Comitee> Comitees { get; set; }
         public DbSet<PersonsComitee> PersonsComitees { get; set; }
+        public DbSet<ComiteeMonth> ComiteeMonths { get; set; }
     }
 }
