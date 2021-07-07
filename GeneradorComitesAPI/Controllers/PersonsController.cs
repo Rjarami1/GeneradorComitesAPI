@@ -1,4 +1,6 @@
-﻿using GeneradorComitesAPI.Models;
+﻿using AutoMapper;
+using GeneradorComitesAPI.DTOs;
+using GeneradorComitesAPI.Models;
 using GeneradorComitesAPI.Utilities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -14,10 +16,12 @@ namespace GeneradorComitesAPI.Controllers
     public class PersonsController : Controller
     {
         private readonly ApplicationDbContext context;
+        private readonly IMapper mapper;
 
-        public PersonsController(ApplicationDbContext context)
+        public PersonsController(ApplicationDbContext context, IMapper mapper)
         {
             this.context = context;
+            this.mapper = mapper;
         }
 
         [HttpGet]
@@ -29,18 +33,20 @@ namespace GeneradorComitesAPI.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> Post(Person person)
+        public async Task<ActionResult> Post(PersonCreationDTO personCreation)
         {
-            if(Enum.GetName(typeof(BirthdayDates.Months), person.BirthdayMonth) == null)
+            if(Enum.GetName(typeof(BirthdayDates.Months), personCreation.BirthdayMonth) == null)
             {
                 return BadRequest("Specified month is not valid. Valid months range from 0 to 11");
             }
 
-            if(BirthdayDates.MonthMaxDays[person.BirthdayMonth] < person.BirthdayDay)
+            if(BirthdayDates.MonthMaxDays[personCreation.BirthdayMonth] < personCreation.BirthdayDay)
             {
-                return BadRequest($"The birthday day number '{person.BirthdayDay}' " +
-                    $"is not valid for the month of {Enum.GetName(typeof(BirthdayDates.Months), person.BirthdayMonth)}");
+                return BadRequest($"The birthday day number '{personCreation.BirthdayDay}' " +
+                    $"is not valid for the month of {Enum.GetName(typeof(BirthdayDates.Months), personCreation.BirthdayMonth)}");
             }
+
+            var person = mapper.Map<Person>(personCreation);
 
             context.Add(person);
 

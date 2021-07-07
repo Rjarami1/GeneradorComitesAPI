@@ -13,7 +13,15 @@ namespace GeneradorComitesAPI
         {
         }
 
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<PersonsComitee>().HasKey(pc => new { pc.PersonId, pc.ComiteeId });
+        }
+
         public DbSet<Person> Persons { get; set; }
         public DbSet<Comitee> Comitees { get; set; }
+        public DbSet<PersonsComitee> PersonsComitees { get; set; }
     }
 }
